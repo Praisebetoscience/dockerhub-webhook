@@ -1,5 +1,5 @@
 {
-    "apikey": "p1uPdt2URu9GpZneY2Dn",
+    "apikey": "secret",
     "hooks": {
         "repo1": "path/to/script1.sh",
         "repo1": "path/to/script2.sh"
