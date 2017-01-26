@@ -11,10 +11,20 @@ __author__ = 'PraiseBeToScience'
 __version__ = '0.1'
 __license__ = 'MIT'
 
+import logging
+
 import bottle
 from bottle import request, route, run, Response
 
 from dochook import DockerhubWebhook
+
+logger = logging.getLogger('dochook')
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler()
+formatter = logging.Formatter("[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.debug('testing debug output')
 
 DockerhubWebhook.config(open('config.json', 'r'))
 

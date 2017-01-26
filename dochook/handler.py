@@ -3,6 +3,8 @@ import subprocess
 import requests
 from .config import Config
 
+logger = logging.getLogger('dochook')
+
 
 class DockerhubWebhook(object):
 
@@ -40,7 +42,7 @@ class DockerhubWebhook(object):
             res = cls.create_response('error', err[0], err[1])
             if json_data:
                 cls.callback(res, json_data.get('callback_url'))
-            logging.error('Bad Request: %s', err[1])
+            logger.error('Bad Request: %s', err[1])
             return res
 
         return cls.run_script(json_data)
@@ -49,16 +51,16 @@ class DockerhubWebhook(object):
     def run_script(cls, json_data):
         hook = json_data['repository']['name']
 
-        logging.debug("Payload from dockerhub")
-        logging.debug(json_data)
-        logging.info("Running hook on repo: %s", hook)
+        logger.debug("Payload from dockerhub")
+        logger.debug(json_data)
+        logger.info("Running hook on repo: %s", hook)
 
         error = subprocess.call(cls.cfg['hooks'][hook].split())
         if error:
             res = cls.create_response('error',
                                       '500',
                                       '{} failed.'.format(hook))
-            logging.error('Error running script: %s', cls.cfg['hooks'][hook])
+            logger.error('Error running script: %s', cls.cfg['hooks'][hook])
         else:
             res = cls.create_response('success',
                                       '200',
@@ -72,5 +74,5 @@ class DockerhubWebhook(object):
             return None
         res = requests.post(callback_url, json=res)
 
-        logging.debug("Callback response:")
-        logging.debug(res)
+        logger.debug("Callback response:")
+        logger.debug(res.text)
