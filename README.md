@@ -11,6 +11,7 @@ dockerhub-webhook listens to HTTP POST requests from dockerhub and triggers your
 
 ## Features
 
+* Supports Python 3.3+ 
 * Lightweight - built on bottle and gunicorn.
 * Easy installation.
 * supports unlimited number of triggers. 
