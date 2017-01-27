@@ -21,8 +21,8 @@ class Config(object):
                     self.cfg[k] = val
 
         self.cfg['apikey'] = environ.get('DOCHOOK_TOKEN', self.cfg['apikey'])
-        logger.debug('DockerhubWebhook configuration loaded:')
-        logger.debug(self.cfg)
+        logger.info('Configuration loaded.')
+        logger.debug('config: %s', self.cfg)
 
 
     def update(self, cfg_file):
@@ -33,8 +33,8 @@ class Config(object):
             if k in self.cfg:
                 self.cfg[k] = val
 
-        logger.debug('DockerhubWebhook configuration updated:')
-        logger.debug(self.cfg)
+        logger.info('Dochook configuration updated.')
+        logger.debug('config: %s', self.cfg)
 
     def __getitem__(self, key):
         return self.cfg[key]
