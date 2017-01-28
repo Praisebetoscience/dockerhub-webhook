@@ -1,5 +1,5 @@
-from dochook import DockerhubWebhook
-from dochook.config import Config
+from app.handler import DockerhubWebhook
+from app.config import Config
 
 
 def test_default():

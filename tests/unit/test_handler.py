@@ -1,5 +1,5 @@
 import pytest
-from dochook import DockerhubWebhook
+from app.handler import DockerhubWebhook
 
 
 def pop_key(dic: dict, key: str):
@@ -51,6 +51,7 @@ def test_success_push(config_dwh, request_mock, params, json_data, call_mock):
     assert 'deployed.' in res['description']
     assert res['state'] == 'success'
 
+    res.pop('status_code')
     request_mock.assert_called_once_with(json_data['callback_url'],
                                          json=res)
     call_mock.assert_called_once_with(['scripts/test.sh'])
@@ -63,6 +64,7 @@ def test_script_error(config_dwh, request_mock, params, json_data, call_mock):
     assert 'failed.' in res['description']
     assert res['state'] == 'error'
 
+    res.pop('status_code')
     request_mock.assert_called_once_with(json_data['callback_url'],
                                          json=res)
     call_mock.assert_called_once_with(['scripts/test.sh'])
@@ -81,6 +83,7 @@ def test_bad_api_key(json_data, request_mock, config_dwh, params):
     assert res['description'] == 'Invalid API key.'
     assert res['state'] == 'error'
 
+    res.pop('status_code')
     request_mock.assert_called_once_with(json_data['callback_url'],
                                          json=res)
 
@@ -112,6 +115,7 @@ def test_missing_json_keys(request_mock, config_dwh, params, json_data,
     if missing_key == 'callback_url':
         request_mock.assert_not_called()
     else:
+        res.pop('status_code')
         request_mock.assert_called_once_with(json_data['callback_url'],
                                              json=res)
 
@@ -124,5 +128,6 @@ def test_missing_hook(request_mock, config_dwh, params, json_data):
     assert 'not found' in res['description']
     assert res['state'] == 'error'
 
+    res.pop('status_code')
     request_mock.assert_called_once_with(json_data['callback_url'],
                                          json=res)
