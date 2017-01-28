@@ -2,7 +2,7 @@ import logging
 import json
 from os import environ
 
-logger = logging.getLogger('dochook')
+from app import app
 
 class Config(object):
 
@@ -21,8 +21,8 @@ class Config(object):
                     self.cfg[k] = val
 
         self.cfg['apikey'] = environ.get('DOCHOOK_TOKEN', self.cfg['apikey'])
-        logger.info('Configuration loaded.')
-        logger.debug('config: %s', self.cfg)
+        app.logger.info('Configuration loaded.')
+        app.logger.debug('config: %s', self.cfg)
 
 
     def update(self, cfg_file):
@@ -33,8 +33,8 @@ class Config(object):
             if k in self.cfg:
                 self.cfg[k] = val
 
-        logger.info('Dochook configuration updated.')
-        logger.debug('config: %s', self.cfg)
+        app.logger.info('Dochook configuration updated.')
+        app.logger.debug('config: %s', self.cfg)
 
     def __getitem__(self, key):
         return self.cfg[key]
