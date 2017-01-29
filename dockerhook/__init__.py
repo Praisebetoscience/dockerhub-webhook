@@ -3,7 +3,7 @@
 
 __author__ = 'PraiseBeToScience'
 __version__ = '0.2'
-__license__ = 'MIT'
+__license__ = 'Apache-2.0'
 
 
 from flask import Flask, request, jsonify, make_response
