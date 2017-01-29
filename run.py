@@ -2,5 +2,5 @@
 
 """dockerhub-webhook run.py"""
 
-from app import app
+from dockerhook import app
 app.run(debug=True)
