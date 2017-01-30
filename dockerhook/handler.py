@@ -18,7 +18,9 @@ class DockerhubWebhook(object):
         json_data = request.get_json(silent=True)
         err = None
 
-        app.logger.info('Request recieved from %s', request.remote_addr)
+        app.logger.debug("Payload from dockerhub:")
+        app.logger.debug(json_data)
+        app.logger.info('Request from: %s', request.remote_addr)
 
         if not args or args.get('key') != app.config['APIKEY']:
             err = ('403', 'Invalid API key.')
@@ -48,8 +50,7 @@ class DockerhubWebhook(object):
         hook = json_data['repository']['name']
         script = app.config['HOOKS'][hook]
 
-        app.logger.debug("Payload from dockerhub:")
-        app.logger.debug(json_data)
+
         app.logger.info("Triggering hook on repo: %s", hook)
 
         error = subprocess.call(script.split())

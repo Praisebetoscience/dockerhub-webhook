@@ -10,11 +10,10 @@ python:
     - nightly
 install:
     - yes | pip uninstall py pytest
-    - pip install -r requirements/production.txt
-    - pip install -r requirements/development.txt
-    - pip install pytest-cov
+    - yes | pip install -U pip setuptools
+    - pip install -e .
     - pip install coveralls
 script:
-    py.test --cov=dockerhook tests
+    python setup.py test
 after_success:
     coveralls
