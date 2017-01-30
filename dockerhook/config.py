@@ -35,7 +35,7 @@ def configure_app(app):
     config_name = os.environ.get('FLASK_CONFIGURATION', 'default')
     app.config.from_object(config[config_name])
     app.config.from_pyfile('config.py', silent=True)
-    apikey = os.environ.get('DOCKERHUB_TOKEN', None)
+    apikey = os.environ.get('DOCKERHOOK_TOKEN', None)
     if apikey:
         app.config['APIKEY'] = apikey
     # Configure Logging

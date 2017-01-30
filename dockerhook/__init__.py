@@ -14,7 +14,7 @@ from dockerhook.util import get_instance_folder_path
 
 app = Flask(__name__,
             instance_path=get_instance_folder_path(),
-            instance_relative_config=True,)
+            instance_relative_config=True)
 
 configure_app(app)
 
