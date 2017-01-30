@@ -95,7 +95,3 @@ class BaseFlaskTester:
 
             dockerhook.app.config.from_envvar('DOCKERHOOK_SETTINGS')
             self.app = dockerhook.app.test_client()
-
-    # def teardown(self, call_mock, post_mock):
-    #     call_mock.reset_mock()
-    #     post_mock.reset_mock()

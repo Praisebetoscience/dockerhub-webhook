@@ -1,4 +1,4 @@
 APIKEY = 'filesecret'
 HOOKS = {
-    'testpush': 'script/test.sh'
+    'testpush': 'scripts/test.sh'
 }
