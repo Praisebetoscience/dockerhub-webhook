@@ -1,5 +1,6 @@
-"""dockerhub_webhook setup.py"""
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""dockerhub_webhook setup.py"""
 import os
 import codecs
 import re
@@ -8,7 +9,7 @@ from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'dockerhub-webhook'
 HERE = os.path.dirname(__file__)
-with codec.open(os.path.join(HERE, 'README.md'), encoding='utf8') as file:
+with codecs.open(os.path.join(HERE, 'README.md'), encoding='utf8') as file:
     README = file.read()
 
 
@@ -49,10 +50,10 @@ setup(name=PACKAGE_NAME,
       author=get_metavar('author', 'dockerhook', '__init__.py'),
       author_email=get_metavar('email', 'dockerhook', '__init__.py'),
       url='https://github.com/Praisebetoscience/dockerhub-webhook',
-      keywords='dockerhub webhook handler'
+      keywords='dockerhub webhook handler',
       license=get_metavar('license', 'dockerhook', '__init__.py'),
       packages=find_packages(exclude=['tests.*', 'tests', 'venv']),
-      package_data={'', 'LICENSE'},
+      package_data={'': 'LICENSE'},
       install_requires=install_requires,
       setup_requires=setup_requires,
       tests_require=tests_require,
