@@ -2,8 +2,13 @@
 # pylint: disable=C0413, C0103
 
 __author__ = 'PraiseBeToScience'
+__copyright__ = 'Copyright 2017 PraiseBeToScience'
+__credits__ = ['PraiseBeToScience']
+__license__ = 'Apache License 2.0'
 __version__ = '0.2'
-__license__ = 'Apache-2.0'
+__maintainer__ = 'PraiseBeToScience'
+__email__ = 'pbts.reddit@gmail.com'
+__status__ = '5 - Production'
 
 
 from flask import Flask, request, jsonify, make_response
