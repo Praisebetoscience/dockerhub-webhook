@@ -15,6 +15,6 @@ install:
     - pip install pytest-cov
     - pip install coveralls
 script:
-    py.test --cov=dochook tests/unit/
+    py.test --cov=dockerhook tests
 after_success:
     coveralls

@@ -1,18 +1,10 @@
-import logging
 import subprocess
-import requests
-from .config import Config
 
-logger = logging.getLogger('dochook')
+from flask import current_app as app
+import requests
 
 
 class DockerhubWebhook(object):
-
-    cfg = Config()
-
-    @classmethod
-    def config(cls, cfg_file):
-        cls.cfg.update(cfg_file)
 
     @staticmethod
     def create_response(state, status_code, description):
@@ -21,10 +13,14 @@ class DockerhubWebhook(object):
                 'status_code': status_code}
 
     @classmethod
-    def handler(cls, params, json_data):
+    def handler(cls, request):
+        args = request.args
+        json_data = request.get_json(silent=True)
         err = None
 
-        if not params or params.get('key') != cls.cfg['apikey']:
+        app.logger.info('Request recieved from %s', request.remote_addr)
+
+        if not args or args.get('key') != app.config['APIKEY']:
             err = ('403', 'Invalid API key.')
         elif not json_data:
             err = ('400', 'Missing payload.')
@@ -34,15 +30,15 @@ class DockerhubWebhook(object):
             err = ('400', 'Missing payload.repository.')
         elif json_data['repository'].get('name') is None:
             err = ('400', 'Missing payload.repository.name.')
-        elif json_data['repository']['name'] not in cls.cfg['hooks']:
+        elif json_data['repository']['name'] not in app.config['HOOKS']:
             name = json_data['repository']['name']
             err = ('400', 'Hook for {} not found.'.format(name))
 
         if err:
+            app.logger.error('Bad Request: %s', err[1])
             res = cls.create_response('error', err[0], err[1])
             if json_data:
                 cls.callback(res, json_data.get('callback_url'))
-            logger.error('Bad Request: %s', err[1])
             return res
 
         return cls.run_script(json_data)
@@ -50,21 +46,23 @@ class DockerhubWebhook(object):
     @classmethod
     def run_script(cls, json_data):
         hook = json_data['repository']['name']
+        script = app.config['HOOKS'][hook]
 
-        logger.debug("Payload from dockerhub")
-        logger.debug(json_data)
-        logger.info("Running hook on repo: %s", hook)
+        app.logger.debug("Payload from dockerhub:")
+        app.logger.debug(json_data)
+        app.logger.info("Triggering hook on repo: %s", hook)
 
-        error = subprocess.call(cls.cfg['hooks'][hook].split())
+        error = subprocess.call(script.split())
         if error:
             res = cls.create_response('error',
                                       '500',
                                       '{} failed.'.format(hook))
-            logger.error('Error running script: %s', cls.cfg['hooks'][hook])
+            app.logger.error('Error running script: %s', script)
         else:
             res = cls.create_response('success',
                                       '200',
                                       '{} deployed.'.format(hook))
+            app.logger.info('Script completed successfully.')
         cls.callback(res, json_data['callback_url'])
         return res
 
@@ -72,7 +70,9 @@ class DockerhubWebhook(object):
     def callback(cls, res: dict, callback_url: str):
         if not callback_url:
             return None
-        res = requests.post(callback_url, json=res)
+        payload = res.copy()
+        payload.pop('status_code')
+        dockerhub_response = requests.post(callback_url, json=payload)
 
-        logger.debug("Callback response:")
-        logger.debug(res.text)
+        app.logger.debug("Callback response:")
+        app.logger.debug(dockerhub_response.text)

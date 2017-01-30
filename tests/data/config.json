@@ -1,5 +1,0 @@
-{
-    "apikey": "testsecret",
-    "hooks": {"testpush": "scripts/test.sh"},
-    "badkey": "deleteme"
-}

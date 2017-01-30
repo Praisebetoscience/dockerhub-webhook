@@ -1,0 +1,13 @@
+####
+# config.py.example
+
+# Copy this file to config.py, then update APIKEY and HOOKS.
+
+# env $DOCKERHOOK_TOKEN overrides this.
+APIKEY = 'secret'
+
+# Add your script using the name of your repository as the key
+HOOKS = {'testpush': 'scripts/test.sh'}
+
+## Set the location of the log files:
+# LOGGING_LOCATION = 'log/dockerhook.log'
