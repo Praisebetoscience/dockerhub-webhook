@@ -1,42 +1,44 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=C0111,C0103
+
 """dockerhub_webhook setup.py"""
 import os
-import codecs
+from codecs import open as copen
 import re
 
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'dockerhub-webhook'
 HERE = os.path.dirname(__file__)
-with codecs.open(os.path.join(HERE, 'README.md'), encoding='utf8') as file:
-    README = file.read()
+with copen(os.path.join(HERE, 'README.md'), encoding='utf8') as fpt:
+    README = fpt.read()
 
 
 def read(*subpaths):
     path = os.path.join(HERE, *subpaths)
-    with codecs.open(path, encoding='utf8') as file:
-        return file.read()
+    with copen(path, encoding='utf8') as fobj:
+        return fobj.read()
 
 
 def get_metavar(metavar, *paths):
-    file = read(*paths)
-    version_pattern = r'''^__{}__\s*=\s*['"](?P<var>.*)['"]'''.format(metavar)
-    var_match = re.search(version_pattern, file, re.M)
+    metavar_file = read(*paths)
+    metavar_patern = r'''^__{}__\s*=\s*['"](?P<var>.*)['"]'''.format(metavar)
+    var_match = re.search(metavar_patern, metavar_file, re.M)
 
     if var_match:
         return var_match.group('var')
     raise RuntimeError('{} string not found'.format(metavar))
 
 
-install_requires = [
-    'requests ==2.13.0',
-    'Flask ==0.12'
-]
+with copen(os.path.join(HERE, 'requirements.txt'), encoding='utf8') as fpt:
+    install_requires = [l.strip() for l in fpt.readlines()]
+
 
 tests_require = [
     'pytest >=3.0.6',
-    'pytest-mock >=1.5.0'
+    'pytest-mock >=1.5.0',
+    'pytest-cov >=2.4.0',
 ]
 
 setup_requires = [
