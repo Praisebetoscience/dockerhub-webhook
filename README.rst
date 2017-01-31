@@ -118,6 +118,13 @@ source, you have to download the example directly.
     cd dockerhook
     wget -o config.py https://raw.githubusercontent.com/Praisebetoscience/dockerhub-webhook/master/config.py.example
 
+Install using pip
+
+.. code-block:: bash
+
+    pip install dockerhub-webhook
+
+
 .. _DockerHubSetup:
 
 Configure `Docker Hub`_
