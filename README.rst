@@ -1,6 +1,8 @@
 dockerhub-webhook
 =================
-
+.. image:: https://img.shields.io/pypi/v/dockerhub-webhook.svg
+   :alt: PyPi version
+   :target: https://pypi.python.org/pypi?:action=display&name=dockerhub-webhook&version=0.2.1
 .. image:: https://travis-ci.org/Praisebetoscience/dockerhub-webhook.svg?branch=master
    :alt: Travis CI Status
    :target: https://travis-ci.org/Praisebetoscience/dockerhub-webhook
