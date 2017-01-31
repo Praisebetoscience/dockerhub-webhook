@@ -8,6 +8,3 @@ APIKEY = 'secret'
 
 # Add your script using the name of your repository as the key
 HOOKS = {'testpush': 'scripts/test.sh'}
-
-## Set the location of the log files:
-# LOGGING_LOCATION = 'log/dockerhook.log'
