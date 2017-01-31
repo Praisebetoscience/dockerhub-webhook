@@ -25,8 +25,6 @@ app = Flask(__name__,
 
 configure_app(app)
 
-print(get_instance_folder_path())
-
 
 @app.route("/")
 def index():
