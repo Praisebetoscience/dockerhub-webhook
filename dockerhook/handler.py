@@ -1,7 +1,10 @@
 """Main handler class for dockerhub-webhook"""
 
 # Built in imports
+import shlex
 import subprocess
+from subprocess import CalledProcessError
+from io import StringIO
 
 # Third party imports
 import requests
@@ -86,21 +89,31 @@ class DockerhubWebhook(object):
             Dict: JSON Response
         """
         hook = json_data['repository']['name']
-        script = app.config['HOOKS'][hook]
+        script_args = shlex.split(app.config['HOOKS'][hook])
+        app.logger.info("Subprocess [%s]: %s", hook, script_args)
 
-        app.logger.info("Triggering hook on repo: %s", hook)
+        try:
+            script_process = subprocess.Popen(
+                script_args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+            process_output, _ = script_process.communicate()
 
-        error = subprocess.call(script.split())
-        if error:
-            res = cls.create_response('error',
-                                      '500',
-                                      '{} failed.'.format(hook))
-            app.logger.error('Error running script: %s', script)
+            process_output = StringIO(str(process_output, encoding='utf8'))
+            app.logger.info(process_output.read())
+
+        except (OSError, CalledProcessError) as exception:
+            app.logger.error('Exception occured: %s', str(exception))
+            app.logger.info('Subprocess failed.')
+            res = cls.create_response(
+                'error', '500', '{} failed.'.format(hook))
         else:
-            res = cls.create_response('success',
-                                      '200',
-                                      '{} deployed.'.format(hook))
+            # no exception raised.
+            res = cls.create_response(
+                'success', '200', '{} deployed.'.format(hook))
             app.logger.info('Script completed successfully.')
+
         cls.callback(res, json_data['callback_url'])
         return res
 

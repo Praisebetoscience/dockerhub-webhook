@@ -61,7 +61,7 @@ setup(name=PACKAGE_NAME,
       tests_require=tests_require,
       test_suite='tests',
       classifiers=[
-          'Development Status :: 5 - Production/Stable',
+          'Development Status :: 4 - Beta',
           'Environmnt :: Console',
           'Framework :: Flask'
           'Intended Audience :: Developers',
