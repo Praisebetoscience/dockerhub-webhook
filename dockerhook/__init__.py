@@ -1,14 +1,16 @@
+"""docker-webhook __init__.py"""
 # -*- coding: utf-8 -*-
-# pylint: disable=C0413, C0103
+# pylint: disable=C0413, C0103, C0111
+
 
 __author__ = 'PraiseBeToScience'
 __copyright__ = 'Copyright 2017 PraiseBeToScience'
 __credits__ = ['PraiseBeToScience']
 __license__ = 'Apache License 2.0'
-__version__ = '0.2'
+__version__ = '0.2.0'
 __maintainer__ = 'PraiseBeToScience'
 __email__ = 'pbts.reddit@gmail.com'
-__status__ = '5 - Production'
+__status__ = '4 - Beta'
 
 
 from flask import Flask, request, jsonify, make_response

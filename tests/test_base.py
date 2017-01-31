@@ -75,9 +75,9 @@ def post_mock(mocker):
 
 @pytest.fixture
 def call_mock(mocker):
-    call = mocker.patch('subprocess.call')
-    call.return_value = 0
-    return call
+    mock_popen = mocker.patch('subprocess.Popen')
+    mock_popen.return_value.communicate.return_value = [b'output', b'error']
+    return mock_popen
 
 
 class BaseFlaskTester:
@@ -90,8 +90,8 @@ class BaseFlaskTester:
 
     def setup(self):
         with set_env(
-                DOCKERHOOK_SETTINGS=self.test_config_path,
-                FLASK_CONFIGURATION='testing'):
+            DOCKERHOOK_SETTINGS=self.test_config_path,
+            FLASK_CONFIGURATION='testing'):
 
             dockerhook.app.config.from_envvar('DOCKERHOOK_SETTINGS')
             self.app = dockerhook.app.test_client()

@@ -1,19 +1,51 @@
-import subprocess
+"""Main handler class for dockerhub-webhook"""
 
-from flask import current_app as app
+# Built in imports
+import shlex
+import subprocess
+from subprocess import CalledProcessError
+from io import StringIO
+
+# Third party imports
 import requests
+from flask import current_app as app
 
 
 class DockerhubWebhook(object):
 
+    """
+    Handler class for docker-webhook.  Validates requests, processes scripts,
+    fetches callbacks, and responsds with status.
+    """
     @staticmethod
     def create_response(state, status_code, description):
+        """
+        Helper function to create the JSON dict.
+
+        Args:
+            state (str): Dockerhub state
+            status_code (str): HTTP status code
+            description (str): Docker Hub description of result.
+
+        Returns:
+            dict: JSON reponse.
+        """
         return {'state': state,
                 'description': description,
                 'status_code': status_code}
 
     @classmethod
     def handler(cls, request):
+        """
+        Main handler.  Validates incoming requests, then passes data to
+        the callback and run_scipt process.
+
+        Args:
+            request (Flask.Request): Incoming request from Flask
+
+        Returns:
+            Dict: JSON response.
+        """
         args = request.args
         json_data = request.get_json(silent=True)
         err = None
@@ -47,28 +79,53 @@ class DockerhubWebhook(object):
 
     @classmethod
     def run_script(cls, json_data):
+        """
+        Shell command handler.  Runs docker update script from app.config.
+
+        Args:
+            json_data (dict): JSON payload from Docker Hub.
+
+        Returns:
+            Dict: JSON Response
+        """
         hook = json_data['repository']['name']
-        script = app.config['HOOKS'][hook]
+        script_args = shlex.split(app.config['HOOKS'][hook])
+        app.logger.info("Subprocess [%s]: %s", hook, script_args)
 
+        try:
+            script_process = subprocess.Popen(
+                script_args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+            )
+            process_output, _ = script_process.communicate()
 
-        app.logger.info("Triggering hook on repo: %s", hook)
+            process_output = StringIO(str(process_output, encoding='utf8'))
+            app.logger.info(process_output.read())
 
-        error = subprocess.call(script.split())
-        if error:
-            res = cls.create_response('error',
-                                      '500',
-                                      '{} failed.'.format(hook))
-            app.logger.error('Error running script: %s', script)
+        except (OSError, CalledProcessError) as exception:
+            app.logger.error('Exception occured: %s', str(exception))
+            app.logger.info('Subprocess failed.')
+            res = cls.create_response(
+                'error', '500', '{} failed.'.format(hook))
         else:
-            res = cls.create_response('success',
-                                      '200',
-                                      '{} deployed.'.format(hook))
+            # no exception raised.
+            res = cls.create_response(
+                'success', '200', '{} deployed.'.format(hook))
             app.logger.info('Script completed successfully.')
+
         cls.callback(res, json_data['callback_url'])
         return res
 
     @classmethod
     def callback(cls, res: dict, callback_url: str):
+        """
+        Callback Handler - issues callback to Docker Hub.
+
+        Args:
+            res (JSON): JSON response
+            callback_url (str): callback url
+        """
         if not callback_url:
             return None
         payload = res.copy()

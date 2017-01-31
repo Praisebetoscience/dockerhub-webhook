@@ -2,6 +2,7 @@
 # pylint: disable=C0111,C0103,W0201,E0213
 import copy
 import json
+from subprocess import CalledProcessError
 import pytest
 from test_base import BaseFlaskTester, post_mock, call_mock, recusive_del_key
 
@@ -31,6 +32,8 @@ class TestFlask(BaseFlaskTester):
         ('filesecret', None, 500, 'testpush failed', True)])
     def test_hubhook_errors(
             self, post_mock, call_mock, apikey, delkey, code, desc, fail_run):
+
+        # Create payload
         data = None
         if delkey != 'no payload':
             payload = copy.deepcopy(self.default_payload)
@@ -38,10 +41,12 @@ class TestFlask(BaseFlaskTester):
                 payload['repository']['name'] = 'badhook'
             recusive_del_key(payload, delkey)
             data = json.dumps(payload)
+
         url = '/hubhook?key={key}'.format(key=apikey)
 
+        # Simulating run_script raising exception.
         if fail_run:
-            call_mock.return_value = 1
+            call_mock.side_effect = CalledProcessError(13, 'test.sh')
 
         resp = self.app.post(url, data=data, content_type='application/json')
         response = json.loads(str(resp.data, 'utf8'))
@@ -60,4 +65,4 @@ class TestFlask(BaseFlaskTester):
         if not fail_run:
             assert not call_mock.called
         else:
-            call_mock.assert_called_once_with(['scripts/test.sh'])
+            assert call_mock.called_once
