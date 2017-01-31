@@ -13,7 +13,7 @@ from setuptools import setup, find_packages
 
 PACKAGE_NAME = 'dockerhub-webhook'
 HERE = os.path.dirname(__file__)
-with copen(os.path.join(HERE, 'README.md'), encoding='utf8') as fpt:
+with copen(os.path.join(HERE, 'README.rst'), encoding='utf8') as fpt:
     README = fpt.read()
 
 
