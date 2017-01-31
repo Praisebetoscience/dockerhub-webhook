@@ -2,17 +2,33 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=C0111,C0103
 
-"""dockerhub_webhook setup.py"""
-import os
+# setup.py
 from codecs import open as copen
+import os
 import re
+import sys
 
 from setuptools import setup, find_packages
+
 
 PACKAGE_NAME = 'dockerhub-webhook'
 HERE = os.path.dirname(__file__)
 with copen(os.path.join(HERE, 'README.md'), encoding='utf8') as fpt:
     README = fpt.read()
+
+VERSION = get_metavar('version', 'dockerhook', '__init__.py')
+
+
+if sys.argv[-1] == 'publish':
+    os.system("python setup.py sdist upload")
+    os.system("python setup.py bdist_wheel upload")
+    sys.exit()
+
+
+if sys.argv[-1] == 'tag':
+    os.system("git tag -a %s -m 'version %s'" % (VERSION, VERSION))
+    os.system("git push --tags")
+    sys.exit()
 
 
 def read(*subpaths):
@@ -74,4 +90,4 @@ setup(name=PACKAGE_NAME,
           'Programming Language :: Python :: 3 :: Only',
           'Topic :: Utilities'
       ]
-     )
+      )
