@@ -1,3 +1,11 @@
+"""
+Configuration of dockerhub-webhook.  Sets Flask to debug, testing,
+or production modes.  Set application to default configuration then
+overrides it with values in config.py followed by the API key in
+$DOCKERHOOK_TOKEN
+"""
+# pylint: disable=R0903,C0111,C0103
+
 import logging
 import logging.handlers
 import os
@@ -32,12 +40,14 @@ config = {
 
 
 def configure_app(app):
+    # Configure application
     config_name = os.environ.get('FLASK_CONFIGURATION', 'default')
     app.config.from_object(config[config_name])
     app.config.from_pyfile('config.py', silent=True)
     apikey = os.environ.get('DOCKERHOOK_TOKEN', None)
     if apikey:
         app.config['APIKEY'] = apikey
+
     # Configure Logging
     handler = logging.handlers.RotatingFileHandler(
         app.config['LOGGING_LOCATION'], 'a', 1 * 1024 * 1024, 10, 'utf8')
@@ -47,4 +57,3 @@ def configure_app(app):
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
     app.logger.setLevel(app.config['LOGGING_LEVEL'])
-

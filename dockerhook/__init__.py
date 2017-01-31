@@ -1,5 +1,7 @@
+"""docker-webhook __init__.py"""
 # -*- coding: utf-8 -*-
-# pylint: disable=C0413, C0103
+# pylint: disable=C0413, C0103, C0111
+
 
 __author__ = 'PraiseBeToScience'
 __copyright__ = 'Copyright 2017 PraiseBeToScience'

@@ -1,19 +1,48 @@
+"""Main handler class for dockerhub-webhook"""
+
+# Built in imports
 import subprocess
 
-from flask import current_app as app
+# Third party imports
 import requests
+from flask import current_app as app
 
 
 class DockerhubWebhook(object):
 
+    """
+    Handler class for docker-webhook.  Validates requests, processes scripts,
+    fetches callbacks, and responsds with status.
+    """
     @staticmethod
     def create_response(state, status_code, description):
+        """
+        Helper function to create the JSON dict.
+
+        Args:
+            state (str): Dockerhub state
+            status_code (str): HTTP status code
+            description (str): Docker Hub description of result.
+
+        Returns:
+            dict: JSON reponse.
+        """
         return {'state': state,
                 'description': description,
                 'status_code': status_code}
 
     @classmethod
     def handler(cls, request):
+        """
+        Main handler.  Validates incoming requests, then passes data to
+        the callback and run_scipt process.
+
+        Args:
+            request (Flask.Request): Incoming request from Flask
+
+        Returns:
+            Dict: JSON response.
+        """
         args = request.args
         json_data = request.get_json(silent=True)
         err = None
@@ -47,9 +76,17 @@ class DockerhubWebhook(object):
 
     @classmethod
     def run_script(cls, json_data):
+        """
+        Shell command handler.  Runs docker update script from app.config.
+
+        Args:
+            json_data (dict): JSON payload from Docker Hub.
+
+        Returns:
+            Dict: JSON Response
+        """
         hook = json_data['repository']['name']
         script = app.config['HOOKS'][hook]
-
 
         app.logger.info("Triggering hook on repo: %s", hook)
 
@@ -69,6 +106,13 @@ class DockerhubWebhook(object):
 
     @classmethod
     def callback(cls, res: dict, callback_url: str):
+        """
+        Callback Handler - issues callback to Docker Hub.
+
+        Args:
+            res (JSON): JSON response
+            callback_url (str): callback url
+        """
         if not callback_url:
             return None
         payload = res.copy()
